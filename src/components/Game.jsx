@@ -8,7 +8,7 @@ const Game = () => {
 
 	const [catcherPosition, setCatcherPosition] = useState({
 		x: 200,
-		y: 500,
+		y: 520,
 	})
 	const giftWidth = 70
 	const giftHeight = 30
@@ -126,7 +126,7 @@ const Game = () => {
 		setScore(0)
 		setTimeLeft(10)
 		setIsGameOver(false)
-		setCatcherPosition({ x: 200, y: 400 })
+		setCatcherPosition({ x: 200, y: 520 })
 
 		clearInterval(giftIntervalRef.current)
 		clearInterval(fallIntervalRef.current)
