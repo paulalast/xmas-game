@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 const Game = () => {
+	const gameContainerRef = useRef(null)
 	const [gifts, setGifts] = useState([])
 	const [score, setScore] = useState(0)
 	const [catcherPosition, setCatcherPosition] = useState({
-		x: window.innerWidth / 2,
-		y: window.innerHeight - 140,
+		x: 200,
+		y: 800,
 	})
+	const giftWidth = 100
+	const giftHeight = 70
+	const catcherBagWidth = 144
+	const catcherBagHeight = 144
 
 	const generateGift = () => {
-		const positionX = Math.random() * window.innerWidth
+		const maxX = 425 - giftWidth
+
+		const positionX = Math.random() * maxX
+		console.log(" prezent na  X:", positionX)
+
 		return {
 			id: Math.random(),
 			posX: positionX,
@@ -18,13 +27,16 @@ const Game = () => {
 		}
 	}
 	const checkCatch = gift => {
-		const catcherBagWidth = 80
-		const catcherBagHeight = 60
+		const currentCatcherPosition = catcherPositionRef.current
+
+		const giftCenterX = gift.posX + giftWidth / 2
+		const giftCenterY = gift.posY + giftHeight / 2
+
 		return (
-			gift.posX >= catcherPosition.x - catcherBagWidth / 2 &&
-			gift.posX <= catcherPosition.x + catcherBagWidth / 2 &&
-			gift.posY >= catcherPosition.y - catcherBagHeight / 2 &&
-			gift.posY <= catcherPosition.y + catcherBagHeight / 2
+			giftCenterX >= currentCatcherPosition.x &&
+			giftCenterX <= currentCatcherPosition.x + catcherBagWidth &&
+			giftCenterY >= currentCatcherPosition.y &&
+			giftCenterY <= currentCatcherPosition.y + catcherBagHeight
 		)
 	}
 
@@ -40,50 +52,60 @@ const Game = () => {
 	useEffect(() => {
 		const fallInterval = setInterval(() => {
 			setGifts(prevGifts => {
+				let caughtNewGift = false
 				const newGifts = prevGifts.map(gift => {
 					const newPosY = gift.posY + 8
-					const isCaught = checkCatch({ ...gift, posY: newPosY })
-
-					if (isCaught) {
-						setScore(prevScore => prevScore + 1)
+					if (!gift.caught) {
+						if (checkCatch({ ...gift, posY: newPosY })) {
+							caughtNewGift = true
+							return { ...gift, posY: newPosY, caught: true }
+						}
 					}
-
-					return isCaught ? null : { ...gift, posY: newPosY }
+					return { ...gift, posY: newPosY }
 				})
 
-				return newGifts.filter(gift => gift !== null)
+				if (caughtNewGift) {
+					setScore(prevScore => prevScore + 1)
+				}
+
+				return newGifts.filter(gift => !gift.caught)
 			})
 		}, 50)
 
 		return () => clearInterval(fallInterval)
 	}, [])
-
 	const handleMouseMove = e => {
-		const catcherBagWidth = 100
-
 		const newX = Math.min(
 			Math.max(e.clientX - catcherBagWidth / 2, 0),
-			window.innerWidth - catcherBagWidth
+			425 - catcherBagWidth
 		)
-		setCatcherPosition({ x: newX, y: catcherPosition.y })
+		setCatcherPosition({ ...catcherPosition, x: newX })
+		console.log("Nowa pozycja catchera:", newX)
 	}
-	const handleTouchMove = e => {
-		const catcherBagWidth = 1
 
+	const handleTouchMove = e => {
 		const touch = e.touches[0]
 		const newX = Math.min(
 			Math.max(touch.clientX - catcherBagWidth / 2, 0),
-			window.innerWidth - catcherBagWidth
+			425 - catcherBagWidth
 		)
-		setCatcherPosition({ x: newX, y: touch.clientY })
+		setCatcherPosition({ ...catcherPosition, x: newX })
+		console.log("Nowa pozycja catchera (dotyk):", newX)
 	}
+	const catcherPositionRef = useRef(catcherPosition)
+
+	useEffect(() => {
+		catcherPositionRef.current = catcherPosition
+	}, [catcherPosition])
+
 	return (
 		<div
 			onMouseMove={handleMouseMove}
 			onTouchMove={handleTouchMove}
-			className='w-full'
+			ref={gameContainerRef}
+			className='flex w-[425px] h-[1000px] bg-yellow-100/30'
 		>
-			<div className='bg-white absolute right-0 top-2 w-full '>
+			<div className='bg-green-500 h-10 right-0 top-2 w-full flex justify-center'>
 				<h2 className='text-xl uppercase font-extrabold text-red-800'>
 					Wynik:{score}
 				</h2>
@@ -98,7 +120,11 @@ const Game = () => {
 						top: `${gift.posY}px`,
 					}}
 				>
-					<img src='./src/assets/gift.svg' alt='alt' className='w-32 h-10 ' />
+					<img
+						src='./src/assets/gift.svg'
+						alt='alt'
+						className='w-[100px] h-[70px] '
+					/>
 				</div>
 			))}
 			<div
@@ -107,13 +133,12 @@ const Game = () => {
 					left: `${catcherPosition.x}px`,
 					top: `${catcherPosition.y}px`,
 				}}
-				className='flex justify-center items-center catcherBag bg-blue'
-				// onClick={() => handleCatching()}
+				className=' w-[144px] h-[144px]  justify-center items-center  bottom-0 right-0'
 			>
 				<img
 					src='./src/assets/bag.svg'
 					alt='bag'
-					className='w-36 bg-white shadow-lg rounded-full shadow-white'
+					className='w-[144px] h-[144px] bg-white shadow-lg rounded-full shadow-white'
 				/>
 			</div>
 		</div>

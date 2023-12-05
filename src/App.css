@@ -7,15 +7,15 @@ html {
 	margin: 0;
 	padding: 0;
 	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 100vw;
-	min-height: 100vh;
+	justify-items: start;
+	align-items: flex-start;
+	/* width: 425px; */
+	height: 1000px;
 	display: flex;
 	overflow: hidden;
 }
 body {
-	max-width: 425px;
+	width: 425px;
 	letter-spacing: 0.2rem;
 }
 html {
@@ -24,7 +24,7 @@ html {
 
 #root {
 	width: 100%;
-	min-height: 100vh;
+	height: 1000px;
 	background-image: url("src/assets/bg.jpeg");
 	background-size: cover;
 	background-position: center;

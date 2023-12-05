@@ -10,9 +10,9 @@ function App() {
 	}
 
 	return (
-		<div className='app flex flex-col justify-center items-center text-center bg-blue-200/50 w-full h-screen'>
+		<div className='app flex flex-col justify-center items-center text-center bg-blue-200/50 w-[425px] h-[1000px]'>
 			{!gameStarted ? (
-				<div className='start-screen flex flex-col justify-center items-center gap-10'>
+				<div className=' flex flex-col justify-center items-center gap-10'>
 					<h1 className='text-center font-extrabold w-screen uppercase bg-white block text-main'>
 						Złap <br /> Prezent!
 					</h1>
