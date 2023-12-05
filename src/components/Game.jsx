@@ -39,7 +39,7 @@ const Game = () => {
 		const maxX = 425 - giftWidth
 
 		const positionX = Math.random() * maxX
-		const randomOffset = Math.random() * 5-2;
+		const randomOffset = Math.random() * 5 - 2
 		return {
 			id: Math.random(),
 			posX: Math.max(0, Math.min(maxX, positionX + randomOffset)),
@@ -122,46 +122,43 @@ const Game = () => {
 	}, [catcherPosition])
 
 	const resetGame = () => {
+		setGifts([])
+		setScore(0)
+		setTimeLeft(10)
+		setIsGameOver(false)
+		setCatcherPosition({ x: 200, y: 800 })
 
-		setGifts([]);
-		setScore(0);
-		setTimeLeft(10);
-		setIsGameOver(false);
-		setCatcherPosition({ x: 200, y: 800 });
-	
+		clearInterval(giftIntervalRef.current)
+		clearInterval(fallIntervalRef.current)
 
-		clearInterval(giftIntervalRef.current);
-		clearInterval(fallIntervalRef.current);
-	
 		giftIntervalRef.current = setInterval(() => {
-			setGifts(prevGifts => [...prevGifts, generateGift()]);
-		}, 300); 
-	
+			setGifts(prevGifts => [...prevGifts, generateGift()])
+		}, 300)
+
 		fallIntervalRef.current = setInterval(() => {
 			setGifts(prevGifts => {
-				let newScore = score;
+				let newScore = score
 				const newGifts = prevGifts.map(gift => {
 					if (gift.caught) {
-						return null;
+						return null
 					}
-	
-					const newPosY = gift.posY + 14; 
+
+					const newPosY = gift.posY + 14
 					if (checkCatch({ ...gift, posY: newPosY })) {
-						newScore++;
-						return { ...gift, posY: newPosY, caught: true };
+						newScore++
+						return { ...gift, posY: newPosY, caught: true }
 					}
-					return { ...gift, posY: newPosY };
-				});
-	
+					return { ...gift, posY: newPosY }
+				})
+
 				if (newScore !== score) {
-					setScore(newScore);
+					setScore(newScore)
 				}
-	
-				return newGifts.filter(gift => gift !== null && gift.posY < 1000);
-			});
-		}, 30); 
+
+				return newGifts.filter(gift => gift !== null && gift.posY < 1000)
+			})
+		}, 30)
 	}
-	
 
 	return (
 		<div
@@ -186,7 +183,7 @@ const Game = () => {
 					}}
 				>
 					<img
-						src='./src/assets/gift.svg'
+						src='./gift.svg'
 						alt='alt'
 						className='w-[70px] h-[50px] '
 					/>
@@ -214,7 +211,7 @@ const Game = () => {
 					<p className=''>
 						Dzięki Tobie mamy aż:{" "}
 						<span className='font-extrabold text-5xl text-yellow-400'>
-							{score}{" "}
+							{score}
 						</span>
 						prezentów!
 					</p>
