@@ -1,0 +1,34 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+body,
+html {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	min-height: 100vh;
+	display: flex;
+	overflow: hidden;
+}
+body {
+	max-width: 425px;
+	letter-spacing: 0.2rem;
+}
+html {
+	margin: 0 auto;
+}
+
+#root {
+	width: 100%;
+	min-height: 100vh;
+	background-image: url("src/assets/bg.jpeg");
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
