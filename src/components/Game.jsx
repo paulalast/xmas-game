@@ -8,7 +8,7 @@ const Game = () => {
 
 	const [catcherPosition, setCatcherPosition] = useState({
 		x: 200,
-		y: 550,
+		y: 500,
 	})
 	const giftWidth = 70
 	const giftHeight = 30
