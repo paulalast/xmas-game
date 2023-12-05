@@ -21,8 +21,9 @@ body {
 	display: flex;
 	place-items: center;
 	min-width: 320px;
-  width: 425px;
-	min-height: 800px;
+	width: 425px;
+	min-height: 500px;
+	height: 100vh;
 }
 
 h1 {

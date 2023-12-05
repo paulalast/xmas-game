@@ -8,7 +8,7 @@ const Game = () => {
 
 	const [catcherPosition, setCatcherPosition] = useState({
 		x: 200,
-		y: 800,
+		y: 550,
 	})
 	const giftWidth = 70
 	const giftHeight = 30
@@ -126,7 +126,7 @@ const Game = () => {
 		setScore(0)
 		setTimeLeft(10)
 		setIsGameOver(false)
-		setCatcherPosition({ x: 200, y: 800 })
+		setCatcherPosition({ x: 200, y: 400 })
 
 		clearInterval(giftIntervalRef.current)
 		clearInterval(fallIntervalRef.current)
@@ -165,11 +165,11 @@ const Game = () => {
 			onMouseMove={handleMouseMove}
 			onTouchMove={handleTouchMove}
 			ref={gameContainerRef}
-			className='flex w-[425px] h-[1000px] bg-white/30'
+			className='flex w-[425px] h-screen bg-white/30'
 		>
-			<div className='bg-main h-10 right-0 top-2 w-full flex justify-center'>
+			<div className='bg-main h-fit right-0 top-2 w-full  mx-4 flex justify-center'>
 				<h2 className='text-xl uppercase font-extrabold text-white'>
-					Wynik:{score} | Pozostały czas: {timeLeft}s
+					Wynik:{score} | Czas: {timeLeft}s
 				</h2>
 			</div>
 			{gifts.map((gift, index) => (
@@ -182,11 +182,7 @@ const Game = () => {
 						top: `${gift.posY}px`,
 					}}
 				>
-					<img
-						src='./gift.svg'
-						alt='alt'
-						className='w-[70px] h-[50px] '
-					/>
+					<img src='./gift.svg' alt='alt' className='w-[70px] h-[50px] ' />
 				</div>
 			))}
 			<div
@@ -204,7 +200,7 @@ const Game = () => {
 				/>
 			</div>
 			{isGameOver && (
-				<div className='game-over flex flex-col absolute bg-red-600 w-[425px] p-8 h-full text-4xl gap-10 justify-center items-center z-50 text-white'>
+				<div className='game-over flex flex-col absolute bg-red-600 w-[425px] p-8 h-screen text-4xl gap-10 justify-center items-center z-50 text-white'>
 					<h2 className='uppercase font-extrabold text-main '>
 						Koniec <br /> Zbierania!
 					</h2>
@@ -221,7 +217,7 @@ const Game = () => {
 					>
 						Zagraj jeszcze raz!
 					</button>
-					<img src='./bag.svg' alt='elf' className='w-62' />
+					<img src='./bag.svg' alt='elf' className='w-44' />
 				</div>
 			)}
 		</div>
