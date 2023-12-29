@@ -2,33 +2,41 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+html {
+	margin: 0 auto;
+}
+body {
+	width: 425px;
+	min-width: 100vw;
+	letter-spacing: 0.2rem;
+	display: flex;
+}
 body,
 html {
 	margin: 0;
 	padding: 0;
 	display: flex;
-	justify-items: start;
-	align-items: flex-start;
+	/* justify-items: center; */
+	/* align-items: center; */
 	/* width: 425px; */
-	height: 100vh;
-	display: flex;
+	/* height: 600px; */
+	min-height: 100vh;
 	overflow: hidden;
-}
-body {
-	width: 425px;
-	letter-spacing: 0.2rem;
-}
-html {
-	margin: 0 auto;
 }
 
 #root {
+	max-width: 425px;
 	width: 100%;
-	/* height: 800px; */
+	max-height: 100vh;
+	height: 660px;
 	background-image: url("./../bg.jpeg");
+	background-image: url("./assets/bg.jpeg");
 	background-size: cover;
 	background-position: center;
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	justify-self: center;
+	justify-items: center;
+	align-items: flex-start;
+	overflow: hidden;
 }

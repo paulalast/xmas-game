@@ -16,15 +16,16 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-body {
+/* body {
 	margin: 0;
 	display: flex;
+	
 	place-items: center;
 	min-width: 320px;
 	width: 425px;
 	min-height: 500px;
-	height: 100vh;
-}
+	height: 800px;
+} */
 
 h1 {
 	font-size: 3.2em;
@@ -38,7 +39,7 @@ button {
 	font-size: 1em;
 	font-weight: 500;
 	font-family: inherit;
-	background-color: #1a1a1a;
+	background-color: #168331;
 	cursor: pointer;
 	transition: border-color 0.25s;
 }
@@ -52,7 +53,7 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
 	:root {
-		color: #213547;
+		color: #2b6ea9;
 		background-color: #ffffff;
 	}
 	a:hover {

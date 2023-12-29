@@ -5,17 +5,104 @@ const Game = () => {
 	const [gifts, setGifts] = useState([])
 	const [score, setScore] = useState(0)
 	const [isGameOver, setIsGameOver] = useState(false)
+	const [timeLeft, setTimeLeft] = useState(20)
+	const [fallSpeed, setFallSpeed] = useState(10)
+	const [caughtGiftIndex, setCaughtGiftIndex] = useState(-1)
 
 	const [catcherPosition, setCatcherPosition] = useState({
 		x: 200,
-		y: 520,
+		y: 560,
 	})
+
 	const giftWidth = 70
 	const giftHeight = 30
 	const catcherBagWidth = 100
 	const catcherBagHeight = 100
 
-	const [timeLeft, setTimeLeft] = useState(10)
+	const generateGift = () => {
+		const maxX = 425 - giftWidth
+		const positionX = Math.random() * maxX
+		return {
+			id: `gift-${Date.now()}-${Math.random()}`,
+			posX: positionX,
+			posY: 0,
+			caught: false,
+		}
+	}
+
+	const checkCatch = gift => {
+		const currentCatcherPosition = catcherPositionRef.current
+		const giftCenterX = gift.posX + giftWidth / 2
+		const giftCenterY = gift.posY + giftHeight / 2
+
+		if (
+			giftCenterX >= currentCatcherPosition.x &&
+			giftCenterX <= currentCatcherPosition.x + catcherBagWidth &&
+			giftCenterY >= currentCatcherPosition.y &&
+			giftCenterY <= currentCatcherPosition.y + catcherBagHeight
+		) {
+			setCaughtGiftIndex(gifts.indexOf(gift))
+			return true
+		}
+
+		return false
+	}
+
+	const updateGifts = prevGifts => {
+		return prevGifts
+			.map(gift => {
+				if (gift.caught) return gift
+
+				const newPosY = gift.posY + fallSpeed
+				const isCaught = checkCatch({ ...gift, posY: newPosY })
+				return {
+					...gift,
+					posY: newPosY,
+					caught: isCaught ? true : gift.caught,
+				}
+			})
+			.filter((gift, index) => index !== caughtGiftIndex)
+	}
+
+	useEffect(() => {
+		const caughtGiftsCount = gifts.filter(gift => gift.caught).length
+		setScore(caughtGiftsCount)
+		setFallSpeed(prevSpeed => prevSpeed + 0.01 * caughtGiftsCount)
+	}, [gifts])
+
+	const giftIntervalRef = useRef(null)
+	const fallIntervalRef = useRef(null)
+	useEffect(() => {
+		initializeGame()
+	}, [])
+
+	const initializeGame = () => {
+		clearInterval(giftIntervalRef.current)
+		clearInterval(fallIntervalRef.current)
+
+		setGifts([])
+		setScore(0)
+		setTimeLeft(20)
+		setIsGameOver(false)
+		setFallSpeed(10)
+		setCatcherPosition({ x: 200, y: 560 })
+
+		giftIntervalRef.current = setInterval(() => {
+			setGifts(prevGifts => [...prevGifts, generateGift()])
+		}, 400)
+
+		fallIntervalRef.current = setInterval(() => {
+			setGifts(prevGifts => updateGifts(prevGifts))
+		}, 100)
+	}
+
+	useEffect(() => {
+		fallIntervalRef.current = setInterval(() => {
+			setGifts(prevGifts => updateGifts(prevGifts))
+		}, 100)
+
+		return () => clearInterval(fallIntervalRef.current)
+	}, [fallSpeed])
 
 	useEffect(() => {
 		const timer =
@@ -34,69 +121,6 @@ const Game = () => {
 			clearInterval(fallIntervalRef.current)
 		}
 	}, [timeLeft])
-
-	const generateGift = () => {
-		const maxX = 425 - giftWidth
-
-		const positionX = Math.random() * maxX
-		const randomOffset = Math.random() * 5 - 2
-		return {
-			id: Math.random(),
-			posX: Math.max(0, Math.min(maxX, positionX + randomOffset)),
-			posY: 0,
-			caught: false,
-		}
-	}
-	const checkCatch = gift => {
-		const currentCatcherPosition = catcherPositionRef.current
-		const giftCenterX = gift.posX + giftWidth / 2
-		const giftCenterY = gift.posY + giftHeight / 2
-
-		return (
-			giftCenterX >= currentCatcherPosition.x &&
-			giftCenterX <= currentCatcherPosition.x + catcherBagWidth &&
-			giftCenterY >= currentCatcherPosition.y &&
-			giftCenterY <= currentCatcherPosition.y + catcherBagHeight
-		)
-	}
-	const giftIntervalRef = useRef(null)
-	const fallIntervalRef = useRef(null)
-
-	useEffect(() => {
-		giftIntervalRef.current = setInterval(() => {
-			setGifts(prevGifts => [...prevGifts, generateGift()])
-		}, 300)
-
-		return () => clearInterval(giftIntervalRef.current)
-	}, [])
-
-	useEffect(() => {
-		fallIntervalRef.current = setInterval(() => {
-			setGifts(prevGifts => {
-				let newScore = score
-				const newGifts = prevGifts.map(gift => {
-					if (gift.caught) {
-						return null
-					}
-
-					const newPosY = gift.posY + 14
-					if (checkCatch({ ...gift, posY: newPosY })) {
-						newScore++
-						return { ...gift, posY: newPosY, caught: true }
-					}
-					return { ...gift, posY: newPosY }
-				})
-
-				if (newScore !== score) {
-					setScore(newScore)
-				}
-
-				return newGifts.filter(gift => gift !== null && gift.posY < 1000)
-			})
-		}, 30)
-
-		return () => clearInterval(fallIntervalRef.current)
-	}, [score])
 
 	const handleMouseMove = e => {
 		const newX = Math.min(
@@ -122,42 +146,8 @@ const Game = () => {
 	}, [catcherPosition])
 
 	const resetGame = () => {
-		setGifts([])
-		setScore(0)
-		setTimeLeft(10)
-		setIsGameOver(false)
-		setCatcherPosition({ x: 200, y: 520 })
-
-		clearInterval(giftIntervalRef.current)
-		clearInterval(fallIntervalRef.current)
-
-		giftIntervalRef.current = setInterval(() => {
-			setGifts(prevGifts => [...prevGifts, generateGift()])
-		}, 300)
-
-		fallIntervalRef.current = setInterval(() => {
-			setGifts(prevGifts => {
-				let newScore = score
-				const newGifts = prevGifts.map(gift => {
-					if (gift.caught) {
-						return null
-					}
-
-					const newPosY = gift.posY + 14
-					if (checkCatch({ ...gift, posY: newPosY })) {
-						newScore++
-						return { ...gift, posY: newPosY, caught: true }
-					}
-					return { ...gift, posY: newPosY }
-				})
-
-				if (newScore !== score) {
-					setScore(newScore)
-				}
-
-				return newGifts.filter(gift => gift !== null && gift.posY < 1000)
-			})
-		}, 30)
+		initializeGame()
+		console.log("reset  fallSpeed:", fallSpeed)
 	}
 
 	return (
@@ -165,26 +155,29 @@ const Game = () => {
 			onMouseMove={handleMouseMove}
 			onTouchMove={handleTouchMove}
 			ref={gameContainerRef}
-			className='flex w-[425px] h-screen bg-white/30'
+			className='flex w-[425px] h-[660px] bg-white/30 overflow-hidden'
 		>
 			<div className='bg-main h-fit right-0 top-2 w-full  mx-4 flex justify-center'>
 				<h2 className='text-xl uppercase font-extrabold text-white'>
 					Wynik:{score} | Czas: {timeLeft}s
 				</h2>
 			</div>
-			{gifts.map((gift, index) => (
-				<div
-					key={gift.id}
-					className='gift'
-					style={{
-						position: "absolute",
-						left: `${gift.posX}px`,
-						top: `${gift.posY}px`,
-					}}
-				>
-					<img src='./gift.svg' alt='alt' className='w-[70px] h-[50px] ' />
-				</div>
-			))}
+			{gifts.map(
+				(gift, index) =>
+					!gift.caught && (
+						<div
+							key={gift.id}
+							className='gift'
+							style={{
+								position: "absolute",
+								left: `${gift.posX}px`,
+								top: `${gift.posY}px`,
+							}}
+						>
+							<img src='./gift.svg' alt='alt' className='w-[70px] h-[50px]' />
+						</div>
+					)
+			)}
 			<div
 				style={{
 					position: "absolute",
@@ -200,12 +193,12 @@ const Game = () => {
 				/>
 			</div>
 			{isGameOver && (
-				<div className='game-over flex flex-col absolute bg-red-600 w-[425px] p-8 h-screen text-4xl gap-10 justify-center items-center z-50 text-white'>
+				<div className='game-over flex flex-col absolute bg-red-600 w-[425px] p-8 h-[660px] text-4xl gap-10 justify-center items-center z-50 text-white'>
 					<h2 className='uppercase font-extrabold text-main '>
 						Koniec <br /> Zbierania!
 					</h2>
 					<p className=''>
-						Dzięki Tobie mamy aż:{" "}
+						Dzięki Tobie mamy aż:
 						<span className='font-extrabold text-5xl text-yellow-400'>
 							{score}
 						</span>
